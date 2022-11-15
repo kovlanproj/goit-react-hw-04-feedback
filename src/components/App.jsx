@@ -1,13 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Statistics } from './Feedback';
 import { FeedbackOptions } from './Feedback';
 import { Section } from './Feedback';
 import { Notification } from './Feedback';
 import { Container } from './App.styled.js';
-
-// export const App = () => {
-//   return <Feedback />;
-// };
 
 export const App = () => {
   const [good, setGood] = useState(0);
@@ -39,9 +35,16 @@ export const App = () => {
     return total;
   };
 
+  const totalFeedbacks = useMemo(countTotalFeedbacks, [good, neutral, bad]);
+
   const countPositiveFeedbackPercentage = () => {
-    return Math.round((good / countTotalFeedbacks()) * 100);
+    return Math.round((good / totalFeedbacks) * 100);
   };
+
+  const positiveFeedbackPercentage = useMemo(countPositiveFeedbackPercentage, [
+    good,
+    totalFeedbacks,
+  ]);
 
   return (
     <Container>
@@ -50,15 +53,15 @@ export const App = () => {
       </Section>
 
       <Section title="Statistics">
-        {countTotalFeedbacks() === 0 ? (
+        {totalFeedbacks === 0 ? (
           <Notification message="There is no feedback" />
         ) : (
           <Statistics
             good={good}
             neutral={neutral}
             bad={bad}
-            total={countTotalFeedbacks()}
-            positivePercentage={countPositiveFeedbackPercentage()}
+            total={totalFeedbacks}
+            positivePercentage={positiveFeedbackPercentage}
           />
         )}
       </Section>
